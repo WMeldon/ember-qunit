@@ -14,20 +14,11 @@ define(
 
       function wrapper() {
         var context = testContext.get();
-        
+
         resetViews();
         var result = callback.call(context);
-
-        function failTestOnPromiseRejection(reason) {
-          ok(false, reason);
-        }
-
-        Ember.run(function(){
-          stop();
-          Ember.RSVP.Promise.cast(result)['catch'](failTestOnPromiseRejection)['finally'](start);
-        });
       }
 
-      QUnit.test(testName, wrapper);
+      specify(testName, wrapper);
     }
   });

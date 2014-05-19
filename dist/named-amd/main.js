@@ -19,7 +19,8 @@ define("ember-qunit/isolated-container",
       }
       return container;
     }
-  });define("ember-qunit",
+  });
+define("ember-qunit",
   ["ember","./isolated-container","./module-for","./module-for-component","./module-for-model","./test","./test-resolver","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __exports__) {
     "use strict";
@@ -51,7 +52,8 @@ define("ember-qunit/isolated-container",
     __exports__.moduleForModel = moduleForModel;
     __exports__.test = test;
     __exports__.setResolver = setResolver;
-  });define("ember-qunit/module-for-component",
+  });
+define("ember-qunit/module-for-component",
   ["./test-resolver","./module-for","ember","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
@@ -90,7 +92,8 @@ define("ember-qunit/isolated-container",
         context.__setup_properties__.$ = context.__setup_properties__.append;
       });
     }
-  });define("ember-qunit/module-for-model",
+  });
+define("ember-qunit/module-for-model",
   ["./module-for","ember","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
@@ -123,7 +126,8 @@ define("ember-qunit/isolated-container",
         }
       });
     }
-  });define("ember-qunit/module-for",
+  });
+define("ember-qunit/module-for",
   ["ember","./test-context","./isolated-container","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
@@ -135,7 +139,7 @@ define("ember-qunit/isolated-container",
     __exports__["default"] = function moduleFor(fullName, description, callbacks, delegate) {
       var container;
       var context;
-      
+
       var _callbacks = {
         setup: function(){
           callbacks = callbacks || { };
@@ -147,28 +151,28 @@ define("ember-qunit/isolated-container",
 
           callbacks.setup     = callbacks.setup    || function() { };
           callbacks.teardown  = callbacks.teardown || function() { };
-          
+
           function factory() {
             return container.lookupFactory(fullName);
           }
-          
+
           testContext.set({
             container:            container,
             factory:              factory,
             dispatcher:           null,
             __setup_properties__: callbacks
           });
-          
+
           context = testContext.get();
 
           if (delegate) {
             delegate(container, context, defaultSubject);
           }
-          
+
           if (Ember.$('#ember-testing').length === 0) {
             Ember.$('<div id="ember-testing"/>').appendTo(document.body);
           }
-          
+
           buildContextVariables(context);
           callbacks.setup.call(context, container);
         },
@@ -176,18 +180,18 @@ define("ember-qunit/isolated-container",
         teardown: function(){
           Ember.run(function(){
             container.destroy();
-            
+
             if (context.dispatcher) {
               context.dispatcher.destroy();
             }
           });
-          
+
           callbacks.teardown(container);
           Ember.$('#ember-testing').empty();
         }
       };
 
-      QUnit.module(description || fullName, _callbacks);
+      suite(description || fullName, _callbacks);
     }
 
     function defaultSubject(options, factory) {
@@ -200,7 +204,7 @@ define("ember-qunit/isolated-container",
       var callbacks = context.__setup_properties__;
       var container = context.container;
       var factory   = context.factory;
-        
+
       Ember.keys(callbacks).filter(function(key){
         // ignore the default setup/teardown keys
         return key !== 'setup' && key !== 'teardown';
@@ -214,7 +218,8 @@ define("ember-qunit/isolated-container",
         };
       });
     }
-  });define("ember-qunit/test-context",
+  });
+define("ember-qunit/test-context",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -229,7 +234,8 @@ define("ember-qunit/isolated-container",
     }
 
     __exports__.get = get;
-  });define("ember-qunit/test-resolver",
+  });
+define("ember-qunit/test-resolver",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -245,7 +251,8 @@ define("ember-qunit/isolated-container",
     }
 
     __exports__.get = get;
-  });define("ember-qunit/test",
+  });
+define("ember-qunit/test",
   ["ember","./test-context","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
@@ -261,20 +268,11 @@ define("ember-qunit/isolated-container",
 
       function wrapper() {
         var context = testContext.get();
-        
+
         resetViews();
         var result = callback.call(context);
-
-        function failTestOnPromiseRejection(reason) {
-          ok(false, reason);
-        }
-
-        Ember.run(function(){
-          stop();
-          Ember.RSVP.Promise.cast(result)['catch'](failTestOnPromiseRejection)['finally'](start);
-        });
       }
 
-      QUnit.test(testName, wrapper);
+      specify(testName, wrapper);
     }
   });
